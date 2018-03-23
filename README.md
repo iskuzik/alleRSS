@@ -1,5 +1,5 @@
 # alleRSS
-alleRSS to skrypt tworzenia kanałów RSS z nowymi ofertami z serwisu Allegro.pl. W parametrach możemy ustalić parametry, które muszą spełniać oferty, żeby wyświetlane były w kanale RSS. Powstał on na skutek usunięcia z serwisu Allegro.pl generatora kanałów RSS (allegro.pl/rss.php/generatorUser). Działa przy pomocy [WebAPI](https://allegro.pl/webapi). Niestety nie jest on idealny (więcej o tym w uwagach).
+alleRSS to skrypt tworzenia kanałów RSS z nowymi ofertami z serwisu Allegro.pl. W parametrach możemy ustalić parametry, które muszą spełniać oferty, żeby wyświetlane były w kanale RSS. Powstał on na skutek usunięcia z serwisu Allegro.pl generatora kanałów RSS (allegro.pl/rss.php/generatorUser). Działa przy pomocy [WebAPI](https://allegro.pl/webapi). Niestety nie jest on idealny (więcej o tym w [uwagach](#uwagi)).
 
 # Instalacja
 1. Pobieramy skrypt 
@@ -25,7 +25,7 @@ Każdy kanał RSS wymaga tylko parametru `string`. Określamy w nim frazę, któ
 string=szukany+przedmiot
 ```
 
-### 2. Opcjonalne parametry
+## 2. Opcjonalne parametry
 ### Wyszukiwanie w opisach i parametrach ofert: `description`
 Parametr `description` określa, czy oprócz szukania naszej frazy w tytułach, chcemy jej też szukać w opisach i parametrach ofert. Jeśli chcemy rozszerzyć wyszukiwanie, to dodajemy parametr:
 ```
