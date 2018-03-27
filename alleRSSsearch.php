@@ -1,7 +1,7 @@
 <?php
 
 define('ALL_KEY' , 'tutaj wklej klucz webapi allegro'); //klucz webapi allegro
-define('RES_SIZE' , 60); //ilość zwracanych wyników
+define('RES_SIZE' , 60); //domyślna ilość zwracanych wyników
 
 $filterOptions = array();
 
@@ -10,7 +10,13 @@ if(isset($_GET['string']) && strlen($_GET['string']) > 1) {
     $filterOptions[] = array('filterId' => 'search',
     						'filterValueId' => array($searchString));
 } else {
-    die("Parametr \"string\" musi zawierać przynajmniej 2 znaki!");
+    die("Parametr \"string\" musi zawierac przynajmniej 2 znaki!");
+}
+
+if(isset($_GET['resultSize']) && $_GET['resultSize'] > 1 && $_GET['resultSize'] < 1001) {
+    $resultSize = $_GET['resultSize'];
+} else {
+    $resultSize = RES_SIZE;
 }
 
 if(isset($_GET['description']) && $_GET['description'] == 1) {
@@ -101,7 +107,7 @@ try {
 									'sortOptions' => array(
 															'sortType' => 'startingTime',
 															'sortOrder' => 'desc'),
-									'resultSize' => RES_SIZE,
+									'resultSize' => $resultSize,
 									'resultOffset' => 0,
 									'resultScope' => 3);
  
@@ -113,7 +119,7 @@ try {
         echo "<channel>\n";
         echo "<title>Allegro.pl - $searchString</title>\n";
         echo "<link>https://allegro.pl</link>\n";
-        echo "<description>$searchString - najnowsze oferty. Promowane: ". $response->itemsFeaturedCount . "/" . ($response->itemsCount > RES_SIZE ? RES_SIZE : $response->itemsCount) . "</description>\n";
+        echo "<description>$searchString - najnowsze oferty. Promowane: ". $response->itemsFeaturedCount . "/" . ($response->itemsCount > $resultSize ? $resultSize : $response->itemsCount) . "</description>\n";
         
 		foreach ($response->itemsList->item as $key => $object) {
 			echo "<item>\n";
@@ -121,7 +127,7 @@ try {
 			echo "<link>https://allegro.pl/i" . $object->itemId . ".html</link>\n";
 			echo "<description>\n";
 			echo "<![CDATA[Sprzedający: <a href=\"https://allegro.pl/show_user.php?uid=" . $object->sellerInfo->userId . "\">" . $object->sellerInfo->userLogin . "</a><br />]]>\n";
-			echo "<![CDATA[Do końca: " . $object->timeToEnd . ($object->endingTime == "" ? "" : " (") . $object->endingTime . ($object->endingTime == "" ? "" : ") ") . "<br />]]>\n";
+			echo "<![CDATA[Do końca: " . $object->timeToEnd . ($object->endingTime == "" ? "" : " (") . str_replace("T", ", ", $object->endingTime) . ($object->endingTime == "" ? "" : ") ") . "<br />]]>\n";
 			
 			foreach ($object->priceInfo->item as $key => $price) {
 				if ($price->priceType == "bidding") {
@@ -139,7 +145,7 @@ try {
 			foreach ($object->photosInfo->item as $key => $photo) {
 			
 				if ($photo->photoSize == "medium" && $photo->photoIsMain == 1) {
- 		   			echo "<![CDATA[<img src=\"" . $photo->photoUrl . "\">]]>\n";
+ 		   			echo "<![CDATA[<a href=\"https://allegro.pl/i" . $object->itemId . ".html\"><img src=\"" . $photo->photoUrl . "\"></a>]]>\n";
  		   		}
 			}
 			echo "</description>\n";
