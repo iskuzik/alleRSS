@@ -1,6 +1,6 @@
 <?php
 
-define('ALL_KEY' , 'tutaj wklej klucz webapi allegro'); //klucz webapi allegro
+define('ALL_KEY' , 'tutaj wklej klucz webapi allegro'); //klucz webapi allegro 
 define('RES_SIZE' , 60); //domyślna ilość zwracanych wyników
 
 $filterOptions = array();
@@ -142,11 +142,13 @@ try {
 			
 			echo "<![CDATA[<p><a href=\"https://allegro.pl/i" . $object->itemId . ".html\">Przejdź do oferty</a></p>]]>\n";
 			
-			foreach ($object->photosInfo->item as $key => $photo) {
+			if($object->photosInfo->item) {
+				foreach ($object->photosInfo->item as $key => $photo) {
 			
-				if ($photo->photoSize == "medium" && $photo->photoIsMain == 1) {
- 		   			echo "<![CDATA[<a href=\"https://allegro.pl/i" . $object->itemId . ".html\"><img src=\"" . $photo->photoUrl . "\"></a>]]>\n";
- 		   		}
+					if ($photo->photoSize == "medium" && $photo->photoIsMain == 1) {
+ 		   				echo "<![CDATA[<a href=\"https://allegro.pl/i" . $object->itemId . ".html\"><img src=\"" . $photo->photoUrl . "\"></a>]]>\n";
+ 		   			}
+				}
 			}
 			echo "</description>\n";
 			
