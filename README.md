@@ -1,5 +1,5 @@
 # alleRSS
-alleRSS to skrypt tworzenia kanałów RSS z nowymi ofertami z serwisu Allegro.pl. W parametrach możemy ustalić parametry, które muszą spełniać oferty, żeby wyświetlane były w kanale RSS. Powstał on na skutek usunięcia z serwisu Allegro.pl generatora kanałów RSS (allegro.pl/rss.php/generatorUser). Działa przy pomocy [WebAPI](https://allegro.pl/webapi). Niestety nie jest on idealny (więcej o tym w [uwagach](#uwagi)).
+alleRSS to skrypt tworzenia kanałów RSS z nowymi ofertami z serwisu Allegro.pl. Możemy w nim ustalić parametry, które muszą spełniać oferty, żeby wyświetlane były w kanale RSS. Powstał on na skutek usunięcia z serwisu Allegro.pl generatora kanałów RSS (dostępny pod linkami: allegro.pl/rss.php/generatorSearch, allegro.pl/rss.php/generatorCat oraz allegro.pl/rss.php/generatorUser). Działa przy pomocy [WebAPI](https://allegro.pl/webapi). Niestety nie jest on idealny (więcej o tym w [uwagach](#uwagi)).
 
 # Instalacja
 1. Pobieramy skrypt 
@@ -13,17 +13,32 @@ alleRSS to skrypt tworzenia kanałów RSS z nowymi ofertami z serwisu Allegro.pl
 
 Link do kanału RSS tworzymy poprzez podanie adresu serwera na jaki wysłaliśmy skrypt, a następnie podaniu ścieżki do skryptu. Przykładowo, gdy wysłaliśmy skrypt do głównego katalogu serwera, to podstawowym adresem kanału RSS będzie:
 ```
-http://www.naszadomena.pl/alleRSSsearch.php?
+http://www.naszadomena.pl/alleRSS.php?
 ```
 Do takiego adresu dodajemy kolejne parametry. Przed każdym kolejnym parametrem dodajemy znak `&`. Poniżej podałem kilka przykładowe linki do kanałów z wykorzystaniem parametrów.
 
 ## 1. Wymagane parametry
+Użycie jednego z poniższych parametrów jest wymagane, żeby wyświetlić jakiekolwiek oferty. Oczywiście możemy wykorzystać też dwa lub trzy z tych parametrów jednocześnie.
 
 ### Wyszukiwana fraza: `string`
-Każdy kanał RSS wymaga tylko parametru `string`. Określamy w nim frazę, która będzie wyszukiwana w tytułach ofert. Space we frazie zamieniamy na znak `+`. Przykładowo:
+W parametrze `string` określamy frazę, która będzie wyszukiwana w tytułach ofert. Jeśli składa się ona z kilku wyrazów, spacje zamieniamy na znak `+`. Przykładowo:
 ```
 string=szukany+przedmiot
 ```
+
+### ID kategorii: `categoryId`
+W parametrze `categoryId` możemy podać ID kategorii, z której chcemy wyświetlać oferty. Przykładowo:
+```
+categoryId=348
+```
+Niestety aktualnie ID kategorii musimy wyszukać ręcznie wchodząc do wybranej kategorii, np. [Akcesoria GSM](https://allegro.pl/kategoria/akcesoria-gsm-348). Tam w pasku adresu, po nazwie kategorii mozemy znaleźć numer, który jest właśnie ID kategorii.
+
+### ID użytkownika: `userId`
+W parametrze `userId` możemy podać ID użytkownika, którego oferty chcemy wyświetlać. Przykładowo:
+```
+userId=1680
+```
+Niestety aktualnie ID użytkownika musimy wyszukać ręcznie wchodząc do wybranej profilu, np. [Allegro](https://allegro.pl/uzytkownik/Allegro). Tam możemy kliknąć na "Oceny i komentarze", po czym bez problemu zidentyfikujemy ID tego użytkownika.
 
 ## 2. Opcjonalne parametry
 ### Wyszukiwanie w opisach i parametrach ofert: `description`
@@ -58,11 +73,6 @@ condition=new
 lub
 ```
 condition=used
-```
-### Odbiór osobisty: `personalReceipt`
-W tym parametrze możemy zaznaczyć, że interesują nas jedynie oferty, które oferują opcję odbioru osobistego. W takim przypadku musimy dodać parametr:
-```
-personalReceipt=1
 ```
 ### Parametry lokalizacyjne
 Parametry określające lokalizację są specjalne, gdyż jednocześnie możemy wykorzystać tylko jeden z nich. Jednak skrypt jest stworzony tak, że nawet jeśli w adresie podamy więcej parametrów określających lokalizację, to wybrany zostanie tylko jeden, w kolejności: miasto, odległość i województwo.
@@ -116,15 +126,47 @@ Wartość parametru | Województwo
 15 | wielkopolskie
 16 | zachodniopomorskie
 
+### Opcje oferty
+#### Darmowa dostawa `freeShipping`
+W tym parametrze możemy zaznaczyć, że interesują nas jedynie oferty, które oferują opcję darmowej dostawy. W takim przypadku musimy dodać parametr:
+```
+freeShipping=1
+```
+#### Darmowy zwrot `freeReturn`
+W tym parametrze możemy zaznaczyć, że interesują nas jedynie oferty, które oferują opcję darmowego zwrotu. W takim przypadku musimy dodać parametr:
+```
+freeReturn=1
+```
+#### Odbiór w paczkomacie `generalDelivery`
+W tym parametrze możemy zaznaczyć, że interesują nas jedynie oferty, które oferują opcję odbioru paczki w paczkomacie. W takim przypadku musimy dodać parametr:
+```
+generalDelivery=1
+```
+#### Raty PayU `installmentAvailable`
+W tym parametrze możemy zaznaczyć, że interesują nas jedynie oferty, które oferują opcję rat w PayU. W takim przypadku musimy dodać parametr:
+```
+installmentAvailable=1
+```
+#### Faktura VAT `vatInvoice`
+W tym parametrze możemy zaznaczyć, że interesują nas jedynie oferty, które przy zakupie umożliwiają wystawienie faktury VAT. W takim przypadku musimy dodać parametr:
+```
+vatInvoice=1
+```
+#### Odbiór osobisty: `personalReceipt`
+W tym parametrze możemy zaznaczyć, że interesują nas jedynie oferty, które oferują opcję odbioru osobistego. W takim przypadku musimy dodać parametr:
+```
+personalReceipt=1
+```
+
 # Przykładowe wykorzystanie parametrów w kanałach RSS
 
-- Najprostszy kanał RSS z wykorzystaniem jedynie wymaganego parametru `string`
+- Najprostszy kanał RSS z wykorzystaniem jedynie parametru `string`
 ```
-http://www.naszadomena.pl/alleRSSsearch.php?string=szukany+przedmiot
+http://www.naszadomena.pl/alleRSS.php?string=szukany+przedmiot
 ```
-- Kanał wykorzystujący wszystkie możliwe parametry jednocześnie
+- Kanał wykorzystujący większość dostepnych parametrów jednocześnie
 ```
-http://www.naszadomena.pl/alleRSSsearch.php?string=szukany+przedmiot&description=1&price_from=999.99&price_to=1000&offerType=buyNow&condition=new&personalReceipt=1&distance=10km&postCode=00-001
+http://www.naszadomena.pl/alleRSS.php?string=szukany+przedmiot&categoryId=348&userId=1680&description=1&price_from=9.99&price_to=1000&offerType=buyNow&condition=new&personalReceipt=1&distance=10km&postCode=00-001
 ```
 
 
@@ -136,8 +178,8 @@ http://www.naszadomena.pl/alleRSSsearch.php?string=szukany+przedmiot&description
 
 # TODO
 - [x] informacje o nowych ofertach na podstawie wyników wyszukiwania
-- [ ] informacje o nowych ofertach w wybranej kategorii
-- [ ] informacje o nowych ofertach danego użytkownika
+- [x] informacje o nowych ofertach w wybranej kategorii
+- [x] informacje o nowych ofertach danego użytkownika
 - [ ] graficzne tworzenie linków do kanałów RSS z ofertami
 
 
