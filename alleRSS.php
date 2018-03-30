@@ -1,6 +1,6 @@
 <?php
 
-define('ALL_KEY', ' tutaj wklej klucz webapi allegro'); //klucz webapi allegro
+define('ALL_KEY', 'tutaj wklej klucz webapi allegro'); //klucz webapi allegro 
 define('RES_SIZE', 60); //domyślna ilość zwracanych wyników
 
 $filterOptions = array();
@@ -151,7 +151,7 @@ try {
 															'sortOrder' => 'desc'),
 									'resultSize' => $resultSize,
 									'resultOffset' => 0,
-									'resultScope' => 1);
+									'resultScope' => 0); //1
  
 	try {
 		$response = $client->doGetItemsList($doGetItemsList_request);
@@ -205,7 +205,10 @@ try {
 			echo "<title>" . $object->itemTitle . "</title>\n";
 			echo "<link>https://allegro.pl/i" . $object->itemId . ".html</link>\n";
 			echo "<description>\n";
-			echo "<![CDATA[Sprzedający: <a href=\"https://allegro.pl/show_user.php?uid=" . $object->sellerInfo->userId . "\">" . $object->sellerInfo->userLogin . "</a><br />\n";
+			echo "<![CDATA[";
+			if (isset($object->sellerInfo->userId)) {
+			echo "Sprzedający: <a href=\"https://allegro.pl/show_user.php?uid=" . $object->sellerInfo->userId . "\">" . $object->sellerInfo->userLogin . "</a><br />\n";
+			}
 			echo "Do końca: " . $object->timeToEnd;
 			
 			if (isSet($object->endingTime)) {
@@ -223,6 +226,11 @@ try {
 				if ($price->priceType == "buyNow") {
 				
 					echo "Cena Kup Teraz: " . $price->priceValue . "zł<br />\n";
+				}
+				
+				if ($price->priceType == "advert") {
+				
+					echo "Cena w ogłoszeniu: " . $price->priceValue . "zł<br />\n";
 				}
 			}
 			
