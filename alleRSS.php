@@ -202,7 +202,10 @@ try {
         
 		foreach ($response->itemsList->item as $key => $object) {
 			echo "<item>\n";
-			echo "<title>" . $object->itemTitle . "</title>\n";
+			$title = str_replace("<", "&lt;", $object->itemTitle);
+			$title = str_replace("&", "&amp;", $title);
+			
+			echo "<title>" . $title . "</title>\n";
 			echo "<link>https://allegro.pl/i" . $object->itemId . ".html</link>\n";
 			echo "<description>\n";
 			echo "<![CDATA[";
@@ -219,17 +222,16 @@ try {
 			echo "<br />\n";
 			
 			foreach ($object->priceInfo->item as $key => $price) {
+			
 				if ($price->priceType == "bidding") {
 					echo "Aktualna cena: " . $price->priceValue . "zł<br />\n";
 				}
 				
 				if ($price->priceType == "buyNow") {
-				
 					echo "Cena Kup Teraz: " . $price->priceValue . "zł<br />\n";
 				}
 				
 				if ($price->priceType == "advert") {
-				
 					echo "Cena w ogłoszeniu: " . $price->priceValue . "zł<br />\n";
 				}
 			}
