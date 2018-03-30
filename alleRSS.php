@@ -202,8 +202,8 @@ try {
         
 		foreach ($response->itemsList->item as $key => $object) {
 			echo "<item>\n";
-			$title = str_replace("<", "&lt;", $object->itemTitle);
-			$title = str_replace("&", "&amp;", $title);
+			$title = str_replace("&", "&amp;", $object->itemTitle);
+			$title = str_replace("<", "&lt;", $title);
 			
 			echo "<title>" . $title . "</title>\n";
 			echo "<link>https://allegro.pl/i" . $object->itemId . ".html</link>\n";
