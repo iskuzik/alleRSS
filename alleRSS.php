@@ -37,12 +37,12 @@ if ((isset($_GET['price_from']) && is_numeric($_GET['price_from'])) || (isset($_
 
 	if (isset($_GET['price_from']) && is_numeric($_GET['price_from'])) {
 
-		$priceArray[rangeValueMin] = $_GET['price_from'];
+		$priceArray['rangeValueMin'] = $_GET['price_from'];
 	}
 
 	if (isset($_GET['price_to']) && is_numeric($_GET['price_to'])) {
 
-		$priceArray[rangeValueMax] = $_GET['price_to'];
+		$priceArray['rangeValueMax'] = $_GET['price_to'];
 	}
 	
 	$filterOptions[] = array('filterId' => 'price',
