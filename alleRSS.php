@@ -151,7 +151,7 @@ try {
 															'sortOrder' => 'desc'),
 									'resultSize' => $resultSize,
 									'resultOffset' => 0,
-									'resultScope' => 0); //1
+									'resultScope' => 1);
  
 	try {
 		$response = $client->doGetItemsList($doGetItemsList_request);
