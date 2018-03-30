@@ -1,46 +1,46 @@
 <?php
 
-define('ALL_KEY' , ' tutaj wklej klucz webapi allegro'); //klucz webapi allegro
-define('RES_SIZE' , 60); //domyślna ilość zwracanych wyników
+define('ALL_KEY', ' tutaj wklej klucz webapi allegro'); //klucz webapi allegro
+define('RES_SIZE', 60); //domyślna ilość zwracanych wyników
 
 $filterOptions = array();
 
-if(isset($_GET['string']) && strlen($_GET['string']) > 1) {
+if (isset($_GET['string']) && strlen($_GET['string']) > 1) {
     $searchString = str_replace("+", " ", $_GET['string']);
     $filterOptions[] = array('filterId' => 'search',
     						'filterValueId' => array($searchString));
 }
 
-if(isset($_GET['userId'])) {
+if (isset($_GET['userId'])) {
     	$filterOptions[] = array('filterId' => 'userId',
                         		'filterValueId' => array($_GET['userId']));
 }
 
-if(isset($_GET['categoryId'])) {
+if (isset($_GET['categoryId'])) {
     	$filterOptions[] = array('filterId' => 'category',
                         		'filterValueId' => array($_GET['categoryId']));
 }
 
-if(isset($_GET['resultSize']) && $_GET['resultSize'] > 1 && $_GET['resultSize'] < 1001) {
+if (isset($_GET['resultSize']) && $_GET['resultSize'] > 1 && $_GET['resultSize'] < 1001) {
     $resultSize = $_GET['resultSize'];
 } else {
     $resultSize = RES_SIZE;
 }
 
-if(isset($_GET['description']) && $_GET['description'] == 1) {
+if (isset($_GET['description']) && $_GET['description'] == 1) {
     $filterOptions[] = array('filterId' => 'description',
 							'filterValueId' => array(true));
 }
 
-if((isset($_GET['price_from']) && is_numeric($_GET['price_from'])) || (isset($_GET['price_to']) && is_numeric($_GET['price_to']))) {
+if ((isset($_GET['price_from']) && is_numeric($_GET['price_from'])) || (isset($_GET['price_to']) && is_numeric($_GET['price_to']))) {
 	$priceArray = array();
 
-	if(isset($_GET['price_from']) && is_numeric($_GET['price_from'])) {
+	if (isset($_GET['price_from']) && is_numeric($_GET['price_from'])) {
 
 		$priceArray[rangeValueMin] = $_GET['price_from'];
 	}
 
-	if(isset($_GET['price_to']) && is_numeric($_GET['price_to'])) {
+	if (isset($_GET['price_to']) && is_numeric($_GET['price_to'])) {
 
 		$priceArray[rangeValueMax] = $_GET['price_to'];
 	}
@@ -50,10 +50,10 @@ if((isset($_GET['price_from']) && is_numeric($_GET['price_from'])) || (isset($_G
 }
 
 
-if(isset($_GET['offerType'])) {
+if (isset($_GET['offerType'])) {
 	$offerType = $_GET['offerType'];
 	
-    if($offerType == "buyNow") {
+    if ($offerType == "buyNow") {
     
     	$filterOptions[] = array('filterId' => 'offerType',
                         		'filterValueId' => array('buyNow'));
@@ -66,10 +66,10 @@ if(isset($_GET['offerType'])) {
 }
 
 
-if(isset($_GET['condition'])) {
+if (isset($_GET['condition'])) {
 	$condition = $_GET['condition'];
 	
-    if($condition == "new") {
+    if ($condition == "new") {
     
     	$filterOptions[] = array('filterId' => 'condition',
                         		'filterValueId' => array('new'));
@@ -83,37 +83,37 @@ if(isset($_GET['condition'])) {
 
 /* Offer Options */
 
-if(isset($_GET['freeShipping']) && $_GET['freeShipping'] == 1) {
+if (isset($_GET['freeShipping']) && $_GET['freeShipping'] == 1) {
     
     	$filterOptions[] = array('filterId' => 'offerOptions',
                         		'filterValueId' => array('freeShipping'));
 }
 
-if(isset($_GET['freeReturn']) && $_GET['freeReturn'] == 1) {
+if (isset($_GET['freeReturn']) && $_GET['freeReturn'] == 1) {
     
     	$filterOptions[] = array('filterId' => 'offerOptions',
                         		'filterValueId' => array('freeReturn'));
 }
 
-if(isset($_GET['generalDelivery']) && $_GET['generalDelivery'] == 1) {
+if (isset($_GET['generalDelivery']) && $_GET['generalDelivery'] == 1) {
     
     	$filterOptions[] = array('filterId' => 'offerOptions',
                         		'filterValueId' => array('generalDelivery'));
 }
 
-if(isset($_GET['installmentAvailable']) && $_GET['installmentAvailable'] == 1) {
+if (isset($_GET['installmentAvailable']) && $_GET['installmentAvailable'] == 1) {
     
     	$filterOptions[] = array('filterId' => 'offerOptions',
                         		'filterValueId' => array('installmentAvailable'));
 }
 
-if(isset($_GET['vatInvoice']) && $_GET['vatInvoice'] == 1) {
+if (isset($_GET['vatInvoice']) && $_GET['vatInvoice'] == 1) {
     
     	$filterOptions[] = array('filterId' => 'offerOptions',
                         		'filterValueId' => array('vatInvoice'));
 }
 
-if(isset($_GET['personalReceipt']) && $_GET['personalReceipt'] == 1) {
+if (isset($_GET['personalReceipt']) && $_GET['personalReceipt'] == 1) {
     
     	$filterOptions[] = array('filterId' => 'offerOptions',
                         		'filterValueId' => array('personalReceipt'));
@@ -121,7 +121,7 @@ if(isset($_GET['personalReceipt']) && $_GET['personalReceipt'] == 1) {
 
 /* Location Options */
 
-if(isset($_GET['city'])) {
+if (isset($_GET['city'])) {
 	$city = str_replace("+", " ", $_GET['city']);
     $filterOptions[] = array('filterId' => 'city',
     						'filterValueId' => array($city));
@@ -162,43 +162,43 @@ try {
 		
 		if (isset($_GET['userId'])) {
 			if (isset($_GET['string'])) {
-         		$infoString .= ", użytkownik: ";
-         	} else {
-         		$infoString = "Użytkownik: ";
-         	}
-         	
-         	if ($response->itemsCount > 1) {
-         		$infoString .= $response->itemsList->item[0]->sellerInfo->userLogin;
-         	} else {
-         		$infoString .= $_GET['userId'];
-         	}
-         }
-         
-         if (isset($_GET['categoryId'])) {
-         	if (isset($_GET['string']) || isset($_GET['userId'])) {
-         		$infoString .= ", kategoria: ";
-         	} else {
-         		$infoString = "Kategoria: ";
-         	}
-         	
-         	if ($response->itemsCount > 1) {
-         	
-         		foreach ($response->categoriesList->categoriesTree->item as $key => $cat) {
-         			if($cat->categoryId == $_GET['categoryId']) {
-         				$infoString .= $cat->categoryName;
-         			}
+         			$infoString .= ", użytkownik: ";
+         		} else {
+         			$infoString = "Użytkownik: ";
          		}
-         	} else {
-         		$infoString .= $_GET['categoryId'];
+         	
+         		if ($response->itemsCount > 1) {
+         			$infoString .= $response->itemsList->item[0]->sellerInfo->userLogin;
+         		} else {
+         			$infoString .= $_GET['userId'];
+         		}
          	}
-         }
+         
+         	if (isset($_GET['categoryId'])) {
+         		if (isset($_GET['string']) || isset($_GET['userId'])) {
+         			$infoString .= ", kategoria: ";
+         		} else {
+         			$infoString = "Kategoria: ";
+         		}
+         	
+         		if ($response->itemsCount > 1) {
+         	
+         			foreach ($response->categoriesList->categoriesTree->item as $key => $cat) {
+         				if($cat->categoryId == $_GET['categoryId']) {
+         					$infoString .= $cat->categoryName;
+         				}
+         			}
+         		} else {
+         			$infoString .= $_GET['categoryId'];
+         		}
+         	}
         
-        echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
-        echo "<rss version=\"2.0\">\n";
-        echo "<channel>\n";
-        echo "<title>Allegro.pl - $infoString</title>\n";
-        echo "<link>https://allegro.pl</link>\n";
-        echo "<description>$infoString - najnowsze oferty. Promowane: ". $response->itemsFeaturedCount . "/" . ($response->itemsCount > $resultSize ? $resultSize : $response->itemsCount) . "</description>\n";
+        	echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+        	echo "<rss version=\"2.0\">\n";
+        	echo "<channel>\n";
+        	echo "<title>Allegro.pl - $infoString</title>\n";
+        	echo "<link>https://allegro.pl</link>\n";
+        	echo "<description>$infoString - najnowsze oferty. Promowane: ". $response->itemsFeaturedCount . "/" . ($response->itemsCount > $resultSize ? $resultSize : $response->itemsCount) . "</description>\n";
         
 		foreach ($response->itemsList->item as $key => $object) {
 			echo "<item>\n";
@@ -241,16 +241,14 @@ try {
 			echo "</item>\n";
 
 		}
-    	echo "</channel>\n";
-    	echo "</rss>";
-	}
-    catch(SoapFault $error) {
-        echo $error->faultstring;
+    		echo "</channel>\n";
+    		echo "</rss>";
+		
+	} catch (SoapFault $error) {
+        	echo $error->faultstring;
     }
      
-}
-
-catch(SoapFault $error) {
+} catch (SoapFault $error) {
 	echo 'Błąd ', $error->faultcode, ': ', $error->faultstring;
 }
 
