@@ -201,14 +201,11 @@ try {
         	echo "<description>$infoString - najnowsze oferty. Promowane: ". $response->itemsFeaturedCount . "/" . ($response->itemsCount > $resultSize ? $resultSize : $response->itemsCount) . "</description>\n";
         
 		foreach ($response->itemsList->item as $key => $object) {
-			echo "<item>\n";
-			$title = str_replace("&", "&amp;", $object->itemTitle);
-			$title = str_replace("<", "&lt;", $title);
-			
-			echo "<title>" . $title . "</title>\n";
+			echo "<item>\n";			
+			echo "<title>" . htmlspecialchars($object->itemTitle) . "</title>\n";
 			echo "<link>https://allegro.pl/i" . $object->itemId . ".html</link>\n";
-			echo "<description>\n";
-			echo "<![CDATA[";
+			echo "<description><![CDATA[\n";
+			
 			if (isset($object->sellerInfo->userId)) {
 			echo "Sprzedający: <a href=\"https://allegro.pl/show_user.php?uid=" . $object->sellerInfo->userId . "\">" . $object->sellerInfo->userLogin . "</a><br />\n";
 			}
@@ -242,11 +239,11 @@ try {
 				foreach ($object->photosInfo->item as $key => $photo) {
 			
 					if ($photo->photoSize == "medium" && $photo->photoIsMain == 1) {
- 		   				echo "<a href=\"https://allegro.pl/i" . $object->itemId . ".html\"><img src=\"" . $photo->photoUrl . "\"></a>]]>\n";
+ 		   				echo "<a href=\"https://allegro.pl/i" . $object->itemId . ".html\"><img src=\"" . $photo->photoUrl . "\"></a>\n";
  		   			}
 				}
 			}
-			echo "</description>\n";
+			echo "]]></description>\n";
 			echo "<guid isPermaLink=\"false\">" . $object->itemId . "</guid>\n";
 			echo "</item>\n";
 
