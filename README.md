@@ -46,6 +46,24 @@ Parametr `description` określa, czy oprócz szukania naszej frazy w tytułach, 
 ```
 description=1
 ```
+### Typ wyszukiwania: `searchType`
+Parametr `searchType` pozwala nam określić typ wyszukiwania. Domyślnie wyświetlane są oferty, w których znajdują się wszystkie podane słowa, niekoniecznie w podanej przez nas kolejności. Jednak możemy to zmienić.
+#### Szukanie dokładnie podanej frazy
+W tym przypadku wyszukiwane będą tylko oferty, które zawierają podana przez nas frazę dokładnie w taki sposób, jaki wpisaliśmy w parametrze `string`. Sprawdzane będą też polskie znaki, więc warto zwrócić na nie uwagę przy wykorzystaniu tego parametru.
+```
+searchType=2
+```
+#### Szukanie któregokolwiek ze słów
+Podając parametr `searchType` z wartością `3` wyświetlać będziemy wszystkie oferty, które zawierają przynajmniej jedno z podanych przez nas słów.
+```
+searchType=3
+```
+### Wyłączenie słów z wyszukiwania: `exclude`
+W tym parametrze możemy podać słowa, które nie mają znajdować się w wyświetlonych ofertach. Dzięki temu pozbędziemy się podobnych ofert do tej, której szukamy. Może nam to oszczędzić wiele czasu na sprawdzanie ofert, którymi na pewno nie jesteśmy zainteresowani. Kolejne słowa możemy podawać ze znakiem `+`, przykładowo:
+```
+exclude=ram+cpu+gpu
+```
+
 ### Cena od: `price_from`
 W parametrze `price_from` możemy określić minimalną cenę, od której powinny zaczynać się oferty. Możemy w nim podawać liczby całkowite, np. `1000`, jak i zmiennoprzecinkowe, np. `999.99`. Przykładowo:
 ```
