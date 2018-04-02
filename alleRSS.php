@@ -4,11 +4,33 @@ define('ALL_KEY', 'tutaj wklej klucz webapi allegro'); //klucz webapi allegro
 define('RES_SIZE', 60); //domyślna ilość zwracanych wyników
 
 $filterOptions = array();
+$excludeString = "";
+
+if (isset($_GET['exclude'])) {
+    $str = htmlspecialchars($_GET['exclude']);
+    $excludeWords = str_word_count($str, 1, 'ąĄćĆęĘłŁńŃóÓśŚżŻźŹ');
+    
+	foreach ($excludeWords as $word) {
+		$excludeString .= " -" . $word;
+	}    
+}
 
 if (isset($_GET['string']) && strlen($_GET['string']) > 1) {
-    $searchString = str_replace("+", " ", $_GET['string']);
+    $searchString = htmlspecialchars(str_replace("+", " ", $_GET['string']));
+    $searchValue[0] = $searchString;
+    
+    if (isset($_GET['searchType'])) {
+		if ($_GET['searchType'] == 2) {
+			$searchValue[0] = "\"" . $searchString . "\"";
+		
+		} else if ($_GET['searchType'] == 3) {
+			$searchValue[0] = "(" . $searchString . ")";
+		}
+	}
+	
+	$searchValue[0] .= $excludeString;
     $filterOptions[] = array('filterId' => 'search',
-    						'filterValueId' => array($searchString));
+    						'filterValueId' => $searchValue);
 }
 
 if (isset($_GET['userId'])) {
@@ -151,7 +173,7 @@ try {
 															'sortOrder' => 'desc'),
 									'resultSize' => $resultSize,
 									'resultOffset' => 0,
-									'resultScope' => 1);
+									'resultScope' => 1); //1
  
 	try {
 		$response = $client->doGetItemsList($doGetItemsList_request);
@@ -163,97 +185,101 @@ try {
 		if (isset($_GET['userId'])) {
 			if (isset($_GET['string'])) {
          			$infoString .= ", użytkownik: ";
-         		} else {
+         	} else {
          			$infoString = "Użytkownik: ";
-         		}
-         	
-         		if ($response->itemsCount > 1) {
-         			$infoString .= $response->itemsList->item[0]->sellerInfo->userLogin;
-         		} else {
-         			$infoString .= $_GET['userId'];
-         		}
          	}
+         	
+         	if ($response->itemsCount > 1) {
+         		$infoString .= $response->itemsList->item[0]->sellerInfo->userLogin;
+         	} else {
+         		$infoString .= $_GET['userId'];
+         	}
+         }
          
-         	if (isset($_GET['categoryId'])) {
-         		if (isset($_GET['string']) || isset($_GET['userId'])) {
-         			$infoString .= ", kategoria: ";
-         		} else {
-         			$infoString = "Kategoria: ";
-         		}
-         	
-         		if ($response->itemsCount > 1) {
-         	
-         			foreach ($response->categoriesList->categoriesTree->item as $key => $cat) {
-         				if($cat->categoryId == $_GET['categoryId']) {
-         					$infoString .= $cat->categoryName;
-         				}
-         			}
-         		} else {
-         			$infoString .= $_GET['categoryId'];
-         		}
+         if (isset($_GET['categoryId'])) {
+         	if (isset($_GET['string']) || isset($_GET['userId'])) {
+         		$infoString .= ", kategoria: ";
+         	} else {
+         		$infoString = "Kategoria: ";
          	}
+         	
+         	if ($response->itemsCount > 1) {
+         	
+         		foreach ($response->categoriesList->categoriesTree->item as $key => $cat) {
+         			if($cat->categoryId == $_GET['categoryId']) {
+         				$infoString .= $cat->categoryName;
+         			}
+         		}
+         	} else {
+         		$infoString .= $_GET['categoryId'];
+         	}
+         }
         
-        	echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
-        	echo "<rss version=\"2.0\">\n";
-        	echo "<channel>\n";
-        	echo "<title>Allegro.pl - $infoString</title>\n";
-        	echo "<link>https://allegro.pl</link>\n";
-        	echo "<description>$infoString - najnowsze oferty. Promowane: ". $response->itemsFeaturedCount . "/" . ($response->itemsCount > $resultSize ? $resultSize : $response->itemsCount) . "</description>\n";
-        
-		foreach ($response->itemsList->item as $key => $object) {
-			echo "<item>\n";			
-			echo "<title>" . htmlspecialchars($object->itemTitle) . "</title>\n";
-			echo "<link>https://allegro.pl/i" . $object->itemId . ".html</link>\n";
-			echo "<description><![CDATA[\n";
+        echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+        echo "<rss version=\"2.0\">\n";
+        echo "<channel>\n";
+        echo "<title>Allegro.pl - $infoString</title>\n";
+        echo "<link>https://allegro.pl</link>\n";
+        echo "<description>$infoString - najnowsze oferty.";
+        	
+        if (isset($response->itemsFeaturedCount) && isset($response->itemsCount)) {
+        	echo " Promowane: " . $response->itemsFeaturedCount . "/" . ($response->itemsCount > $resultSize ? $resultSize : $response->itemsCount);
+        }
+        echo "</description>\n";
+        	
+        if (isset($response->itemsList->item)) {
+        	foreach ($response->itemsList->item as $key => $object) {
+				echo "<item>\n";			
+				echo "<title>" . htmlspecialchars($object->itemTitle) . "</title>\n";
+				echo "<link>https://allegro.pl/i" . $object->itemId . ".html</link>\n";
+				echo "<description><![CDATA[\n";
 			
-			if (isset($object->sellerInfo->userId)) {
-			echo "Sprzedający: <a href=\"https://allegro.pl/show_user.php?uid=" . $object->sellerInfo->userId . "\">" . $object->sellerInfo->userLogin . "</a><br />\n";
-			}
-			echo "Do końca: " . $object->timeToEnd;
-			
-			if (isSet($object->endingTime)) {
-				echo " (";
-				echo str_replace("T", ", ", $object->endingTime);
-				echo ")";
-			}
-			echo "<br />\n";
-			
-			foreach ($object->priceInfo->item as $key => $price) {
-			
-				if ($price->priceType == "bidding") {
-					echo "Aktualna cena: " . $price->priceValue . "zł<br />\n";
+				if (isset($object->sellerInfo->userId)) {
+					echo "Sprzedający: <a href=\"https://allegro.pl/show_user.php?uid=" . $object->sellerInfo->userId . "\">" . $object->sellerInfo->userLogin . "</a><br />\n";
 				}
+				echo "Do końca: " . $object->timeToEnd;
+			
+				if (isSet($object->endingTime)) {
+					echo " (";
+					echo str_replace("T", ", ", $object->endingTime);
+					echo ")";
+				}
+				echo "<br />\n";
+			
+				foreach ($object->priceInfo->item as $key => $price) {
+					if ($price->priceType == "bidding") {
+						echo "Aktualna cena: " . $price->priceValue . "zł<br />\n";
+					}
 				
-				if ($price->priceType == "buyNow") {
-					echo "Cena Kup Teraz: " . $price->priceValue . "zł<br />\n";
-				}
+					if ($price->priceType == "buyNow") {
+						echo "Cena Kup Teraz: " . $price->priceValue . "zł<br />\n";
+					}
 				
-				if ($price->priceType == "advert") {
-					echo "Cena w ogłoszeniu: " . $price->priceValue . "zł<br />\n";
+					if ($price->priceType == "advert") {
+						echo "Cena w ogłoszeniu: " . $price->priceValue . "zł<br />\n";
+					}
 				}
-			}
+				echo "<p><a href=\"https://allegro.pl/i" . $object->itemId . ".html\">Przejdź do oferty</a></p>\n";
 			
-			echo "<p><a href=\"https://allegro.pl/i" . $object->itemId . ".html\">Przejdź do oferty</a></p>\n";
-			
-			if(isSet($object->photosInfo->item)) {
-				foreach ($object->photosInfo->item as $key => $photo) {
-			
-					if ($photo->photoSize == "medium" && $photo->photoIsMain == 1) {
- 		   				echo "<a href=\"https://allegro.pl/i" . $object->itemId . ".html\"><img src=\"" . $photo->photoUrl . "\"></a>\n";
- 		   			}
+				if (isSet($object->photosInfo->item)) {
+					foreach ($object->photosInfo->item as $key => $photo) {
+						if ($photo->photoSize == "medium" && $photo->photoIsMain == 1) {
+ 		   					echo "<a href=\"https://allegro.pl/i" . $object->itemId . ".html\"><img src=\"" . $photo->photoUrl . "\"></a>\n";
+ 		   				}
+					}
 				}
-			}
-			echo "]]></description>\n";
-			echo "<guid isPermaLink=\"false\">" . $object->itemId . "</guid>\n";
-			echo "</item>\n";
+				echo "]]></description>\n";
+				echo "<guid isPermaLink=\"false\">" . $object->itemId . "</guid>\n";
+				echo "</item>\n";
 
+			}
 		}
-    		echo "</channel>\n";
-    		echo "</rss>";
+    	echo "</channel>\n";
+    	echo "</rss>";
 		
 	} catch (SoapFault $error) {
-        	echo $error->faultstring;
-    }
+		echo $error->faultstring;
+	}
      
 } catch (SoapFault $error) {
 	echo 'Błąd ', $error->faultcode, ': ', $error->faultstring;
